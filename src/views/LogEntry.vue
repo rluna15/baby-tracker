@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-// import { supabase } from '../supabase'
+import { supabase } from '../supabase'
 
 const feedTime = ref('')
 const amount = ref('')
@@ -8,18 +8,18 @@ const unit = ref('oz')
 const diaper = ref('pee')
 
 async function saveLog() {
-//   const { error } = await supabase.from('baby_logs').insert({
-//     feed_time: feedTime.value,
-//     feed_amount: amount.value,
-//     feed_unit: unit.value,
-//     diaper_type: diaper.value
-//   })
+  const { error } = await supabase.from('baby_logs').insert({
+    feed_time: feedTime.value,
+    feed_amount: amount.value,
+    feed_unit: unit.value,
+    diaper_type: diaper.value
+  })
 
-//   if (error) alert(error.message)
-//   else {
-//     alert('Saved!')
-//     amount.value = ''
-//   }
+  if (error) alert(error.message)
+  else {
+    alert('Saved!')
+    amount.value = ''
+  }
 }
 </script>
 

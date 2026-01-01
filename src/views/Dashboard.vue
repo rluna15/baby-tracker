@@ -1,6 +1,6 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-// import { supabase } from '../supabase'
+import { supabase } from '../supabase'
 import { Bar, Pie } from 'vue-chartjs'
 import {
   Chart as ChartJS,
@@ -24,12 +24,12 @@ ChartJS.register(
 const logs = ref([])
 
 onMounted(async () => {
-//   const { data } = await supabase
-//     .from('baby_logs')
-//     .select('*')
-//     .order('feed_time')
+  const { data } = await supabase
+    .from('baby_logs')
+    .select('*')
+    .order('feed_time')
 
-//   logs.value = data || []
+  logs.value = data || []
 })
 
 const diaperCounts = () => ({
