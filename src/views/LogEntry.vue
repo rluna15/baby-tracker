@@ -17,7 +17,7 @@ async function saveLog() {
 
   if (error) alert(error.message)
   else {
-    alert('Saved!')
+    // alert('Saved!')
     amount.value = ''
   }
 }
@@ -41,6 +41,7 @@ async function saveLog() {
       <option value="pee">Pee</option>
       <option value="poop">Poop</option>
       <option value="both">Both</option>
+      <option value="none">None</option>
     </select>
 
     <button @click="saveLog">Save</button>
