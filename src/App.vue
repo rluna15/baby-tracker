@@ -2,7 +2,7 @@
   <nav class="nav">
     <router-link to="/">Log</router-link>
     <router-link to="/dashboard">Dashboard</router-link>
-    <router-link to="/entryedit">Entry Edit</router-link>
+    <router-link to="/milktracker">Milk Tracker</router-link>
   </nav>
   <router-view />
 </template>

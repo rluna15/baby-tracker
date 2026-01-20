@@ -1,11 +1,13 @@
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { supabase } from '../supabase'
 
 const feedTime = ref('')
 const amount = ref('')
 const unit = ref('oz')
 const diaper = ref('pee')
+
+const logs = ref([])
 
 async function saveLog() {
   const { error } = await supabase.from('baby_logs').insert({
@@ -21,6 +23,14 @@ async function saveLog() {
     amount.value = ''
   }
 }
+
+onMounted(async () => {
+  const { data } = await supabase
+    .from('baby_logs')
+    .select('*')
+
+  logs.value = data || []
+})
 </script>
 
 <template>
@@ -46,6 +56,31 @@ async function saveLog() {
 
     <button @click="saveLog">Save</button>
   </div>
+  <div class="container">
+    <h2>Baby Logs</h2>
+    <table class="table" v-if="logs.length">
+      <thead>
+        <tr>
+          <!-- <th>ID</th> -->
+          <th>Feed Time</th>
+          <th>Feed Amount</th>
+          <!-- <th>Feed Unit</th> -->
+          <th>Diaper Type</th>
+          <!-- <th>Created At</th> -->
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="log in logs" :key="log.id">
+          <!-- <td>{{ log.id }}</td> -->
+          <td>{{ new Date(log.feed_time).toLocaleString() }}</td>
+          <td>{{ log.feed_amount + " " + log.feed_unit }}</td>
+          <!-- <td>{{ log.feed_unit }}</td> -->
+          <td>{{ log.diaper_type }}</td>
+          <!-- <td>{{ new Date(log.created_at).toLocaleString() }}</td> -->
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <style scoped>
@@ -54,20 +89,41 @@ async function saveLog() {
   margin: auto;
   padding: 1rem;
 }
-input, select, button {
+
+input,
+select,
+button {
   width: 100%;
   padding: 0.8rem;
   margin-top: 0.6rem;
   font-size: 1rem;
 }
+
 .row {
   display: flex;
   gap: 0.5rem;
 }
+
 button {
   background: #4f46e5;
   color: white;
   border: none;
   border-radius: 6px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: left;
+}
+
+th {
+  background-color: #f2f2f2;
 }
 </style>
