@@ -1,22 +1,20 @@
 <template>
-  <!-- Wireframe Navbar -->
+  <!-- Navbar -->
   <nav class="nav">
-    <router-link to="/" class="nav-link">Baby Logs</router-link>
+    <router-link to="/" class="nav-link">Home</router-link>
+    <router-link to="/babylogs" class="nav-link">Baby Logs</router-link>
     <router-link to="/milktracker" class="nav-link">Milk Tracker</router-link>
   </nav>
 
-  <!-- Main content -->
-  <main class="main-content">
-    <router-view />
-  </main>
+  <router-view/>
 </template>
 
 <script setup>
-// No JS needed here; routing handles which page shows
+
 </script>
 
 <style scoped>
-/* Navbar - wireframe style */
+/* Navbar */
 .nav {
   display: flex;
   justify-content: space-around;
@@ -34,18 +32,10 @@
   text-decoration: none;
   color: #333;
   font-weight: 600;
-  transition: background 0.2s, border-color 0.2s;
 }
 
 .nav-link:hover {
   background-color: #eee;
   border-color: #555;
-}
-
-/* Main container spacing */
-.main-content {
-  max-width: 700px;
-  margin: auto;
-  padding: 16px;
 }
 </style>
