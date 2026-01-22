@@ -4,6 +4,7 @@ import { ref, computed } from 'vue';
 // Form Inputs
 const bagName = ref('');
 const datePumped = ref('');
+const datePumpedEnd = ref('');
 const amount = ref(null);
 
 // Filter Inputs
@@ -20,12 +21,14 @@ const FREEZER_DAYS = 180; // 6 months
 
 function addBag() {
   const pumpedDate = new Date(datePumped.value);
+  const pumpedDateEnd = new Date(datePumpedEnd.value);
   const expirationDate = new Date(pumpedDate);
   expirationDate.setDate(expirationDate.getDate() + FREEZER_DAYS);
 
   bags.value.push({
     bagName: bagName.value,
     datePumped: datePumped.value,
+    datePumpedEnd: datePumpedEnd.value,
     amount: amount.value,
     expiresOn: expirationDate.toISOString().split('T')[0],
   });
@@ -86,6 +89,7 @@ const filteredBags = computed(() => {
     <div class="form-card">
       <input type="text" v-model="bagName" placeholder="Bag Name" />
       <input type="date" v-model="datePumped" />
+      <input type="date" v-model="datePumpedEnd" />
       <input type="number" v-model.number="amount" placeholder="Amount (oz)" />
       <button @click="addBag">Add Bag</button>
     </div>
@@ -102,7 +106,7 @@ const filteredBags = computed(() => {
     <div class="bag-cards mobile-only" v-if="filteredBags.length">
       <div v-for="(bag, index) in filteredBags" :key="index" class="bag-card">
         <div><strong>Bag Name:</strong> {{ bag.bagName }}</div>
-        <div><strong>Date Pumped:</strong> {{ bag.datePumped }}</div>
+        <div><strong>Date Pumped:</strong> {{ bag.datePumped }} - {{ bag.datePumpedEnd }}</div>
         <div><strong>Amount:</strong> {{ bag.amount }} oz</div>
         <div><strong>Expires On:</strong> {{ bag.expiresOn }}</div>
         <div>
@@ -128,7 +132,7 @@ const filteredBags = computed(() => {
       <tbody>
         <tr v-for="(bag, index) in filteredBags" :key="index">
           <td>{{ bag.bagName }}</td>
-          <td>{{ bag.datePumped }}</td>
+          <td>{{ bag.datePumped }} - {{ bag.datePumpedEnd }}</td>
           <td>{{ bag.amount }}</td>
           <td>{{ bag.expiresOn }}</td>
           <td><span :class="statusClass(bag)">{{ bagStatus(bag) }}</span></td>
