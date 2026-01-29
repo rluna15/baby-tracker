@@ -1,35 +1,29 @@
 <script setup>
 import { onMounted, ref } from 'vue'
-import { supabase } from '../supabase'
+
+import { useBabyLogs } from '../composables/useBabyLogs'
+const { logs, loading, error, fetchLogs, createLog} = useBabyLogs()
 
 const feedTime = ref('')
 const amount = ref('')
 const unit = ref('oz')
 const diaper = ref('pee')
 
-const logs = ref([])
-
-async function saveLog() {
-  const { error } = await supabase.from('baby_logs').insert({
+function saveLog() {
+  createLog({
     feed_time: feedTime.value,
     feed_amount: amount.value,
     feed_unit: unit.value,
     diaper_type: diaper.value
   })
 
-  if (error) alert(error.message)
-  else {
-    // alert('Saved!')
-    amount.value = ''
-  }
+  amount.value = ''
+  unit.value = 'oz'
+  diaper.value = 'pee'
 }
 
-onMounted(async () => {
-  const { data } = await supabase
-    .from('baby_logs')
-    .select('*')
-
-  logs.value = data || []
+onMounted(() => {
+  fetchLogs()
 })
 </script>
 
