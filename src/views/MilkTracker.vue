@@ -1,10 +1,13 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+
+import { useBreastMilkBags } from '../composables/useBreastMilkBags';
+const { bags, loading, error, fetchBags, createBag, deleteBag } = useBreastMilkBags()
 
 // Form Inputs
 const bagName = ref('');
-const datePumped = ref('');
-const datePumpedEnd = ref('');
+const dateStart = ref('');
+const dateEnd = ref('');
 const amount = ref(null);
 
 // Filter Inputs
@@ -13,33 +16,26 @@ const filterEndDate = ref('');
 const filterMinAmount = ref(null);
 const filterMaxAmount = ref(null);
 
-// Milk bags data
-const bags = ref([]);
-
 // Freezer expiration days
 const FREEZER_DAYS = 180; // 6 months
 
 function addBag() {
-  const pumpedDate = new Date(datePumped.value);
-  const pumpedDateEnd = new Date(datePumpedEnd.value);
-  const expirationDate = new Date(pumpedDate);
+  const start = new Date(dateStart.value);
+  const end = new Date(dateEnd.value);
+  const expirationDate = new Date(start);
   expirationDate.setDate(expirationDate.getDate() + FREEZER_DAYS);
 
-  bags.value.push({
-    bagName: bagName.value,
-    datePumped: datePumped.value,
-    datePumpedEnd: datePumpedEnd.value,
+  createBag({
+    name: bagName.value,
+    date_start: start,
+    date_end: end,
     amount: amount.value,
-    expiresOn: expirationDate.toISOString().split('T')[0],
-  });
-
-  bagName.value = '';
-  datePumped.value = '';
-  amount.value = null;
+    expires_on: expirationDate
+  })
 }
 
 function removeBag(index) {
-  bags.value.splice(index, 1);
+  deleteBag(index)
 }
 
 // Status logic
@@ -49,7 +45,7 @@ function bagStatus(bag) {
   const diffDays = (expDate - today) / (1000 * 60 * 60 * 24);
 
   if (diffDays < 0) return 'Expired';
-  if (diffDays <= 7) return 'Expiring Soon';
+  if (diffDays <= 14) return 'Expiring Soon';
   return 'Good';
 }
 
@@ -60,6 +56,12 @@ function statusClass(bag) {
     expiring: status === 'Expiring Soon',
     good: status === 'Good',
   };
+}
+
+function formatDate(timestamp) {
+  const date = new Date(timestamp)
+  const options = { year: 'numeric', month: 'short', day: 'numeric'}
+  return date.toLocaleDateString('en-US', options)
 }
 
 // Filtered bags
@@ -79,6 +81,10 @@ const filteredBags = computed(() => {
     return true;
   });
 });
+
+onMounted(() => {
+  fetchBags()
+})
 </script>
 
 <template>
@@ -88,8 +94,8 @@ const filteredBags = computed(() => {
     <!-- Add Bag Form -->
     <div class="form-card">
       <input type="text" v-model="bagName" placeholder="Bag Name" />
-      <input type="date" v-model="datePumped" />
-      <input type="date" v-model="datePumpedEnd" />
+      <input type="date" v-model="dateStart" />
+      <input type="date" v-model="dateEnd" />
       <input type="number" v-model.number="amount" placeholder="Amount (oz)" />
       <button @click="addBag">Add Bag</button>
     </div>
@@ -105,15 +111,15 @@ const filteredBags = computed(() => {
     <!-- Cards (mobile) -->
     <div class="bag-cards mobile-only" v-if="filteredBags.length">
       <div v-for="(bag, index) in filteredBags" :key="index" class="bag-card">
-        <div><strong>Bag Name:</strong> {{ bag.bagName }}</div>
-        <div><strong>Date Pumped:</strong> {{ bag.datePumped }} - {{ bag.datePumpedEnd }}</div>
+        <div><strong>Bag Name:</strong> {{ bag.name }}</div>
+        <div><strong>Date Pumped:</strong> {{ formatDate(bag.date_start) }} - {{ formatDate(bag.date_end) }}</div>
         <div><strong>Amount:</strong> {{ bag.amount }} oz</div>
-        <div><strong>Expires On:</strong> {{ bag.expiresOn }}</div>
+        <div><strong>Expires On:</strong> {{ formatDate(bag.expires_on) }}</div>
         <div>
           <strong>Status:</strong>
           <span :class="statusClass(bag)">{{ bagStatus(bag) }}</span>
         </div>
-        <button @click="removeBag(index)">Remove</button>
+        <button @click="removeBag(bag.id)">Remove</button>
       </div>
     </div>
 
@@ -131,12 +137,12 @@ const filteredBags = computed(() => {
       </thead>
       <tbody>
         <tr v-for="(bag, index) in filteredBags" :key="index">
-          <td>{{ bag.bagName }}</td>
-          <td>{{ bag.datePumped }} - {{ bag.datePumpedEnd }}</td>
+          <td>{{ bag.name }}</td>
+          <td>{{ formatDate(bag.date_start) }} - {{ formatDate(bag.date_end) }}</td>
           <td>{{ bag.amount }}</td>
-          <td>{{ bag.expiresOn }}</td>
+          <td>{{ formatDate(bag.expires_on) }}</td>
           <td><span :class="statusClass(bag)">{{ bagStatus(bag) }}</span></td>
-          <td><button @click="removeBag(index)">Remove</button></td>
+          <td><button @click="removeBag(bag.id)">Remove</button></td>
         </tr>
       </tbody>
     </table>
