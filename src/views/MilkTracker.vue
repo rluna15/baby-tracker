@@ -82,6 +82,15 @@ const filteredBags = computed(() => {
   });
 });
 
+const totalSupply = computed(() => {
+  let totalAmount = 0;
+  bags.value.forEach(bag => {
+    totalAmount += bag.amount
+  })
+
+  return totalAmount
+})
+
 onMounted(() => {
   fetchBags()
 })
@@ -107,6 +116,10 @@ onMounted(() => {
       <input type="number" v-model.number="filterMinAmount" placeholder="Min Amount" />
       <input type="number" v-model.number="filterMaxAmount" placeholder="Max Amount" />
     </div> -->
+
+    <div>
+      <h3>Total Supply: {{ totalSupply }} oz</h3>
+    </div>
 
     <!-- Cards (mobile) -->
     <div class="bag-cards mobile-only" v-if="filteredBags.length">
