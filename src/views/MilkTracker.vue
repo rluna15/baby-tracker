@@ -32,6 +32,11 @@ function addBag() {
     amount: amount.value,
     expires_on: expirationDate
   })
+
+  bagName.value = ''
+  dateStart.value = ''
+  dateEnd.value = ''
+  amount.value = null
 }
 
 function removeBag(index) {
@@ -60,7 +65,7 @@ function statusClass(bag) {
 
 function formatDate(timestamp) {
   const date = new Date(timestamp)
-  const options = { year: 'numeric', month: 'short', day: 'numeric'}
+  const options = { year: 'numeric', month: 'short', day: 'numeric' }
   return date.toLocaleDateString('en-US', options)
 }
 
