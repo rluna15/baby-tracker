@@ -28,11 +28,12 @@ export function useBabyLogs() {
   }
 
   // LATEST
-  const getLatestLogs = async () => {
+  const getLatestLogs = async (limit) => {
     const { data, err } = await supabase
       .from(table)
       .select('*')
-      .limit(10)
+      .order('feed_time', { ascending: false })
+      .limit(limit)
 
     if (err) throw err
     return data
@@ -55,13 +56,12 @@ export function useBabyLogs() {
     const { data, err } = await supabase
       .from(table)
       .insert(payload)
-      .select()
-      .single()
 
     if (err) throw err
 
-    logs.value.unshift(data)
-    return data
+    const latestLog = await getLatestLogs(1)
+
+    logs.value.unshift(latestLog[0])
   }
 
   // UPDATE
