@@ -1,6 +1,8 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 
+import AsciiLocader from '../components/AsciiLocader.vue';
+
 import { useBreastMilkBags } from '../composables/useBreastMilkBags';
 const { bags, loading, error, fetchBags, createBag, deleteBag } = useBreastMilkBags()
 
@@ -111,7 +113,8 @@ onMounted(() => {
       <input type="date" v-model="dateStart" />
       <input type="date" v-model="dateEnd" />
       <input type="number" v-model.number="amount" placeholder="Amount (oz)" />
-      <button @click="addBag">Add Bag</button>
+      <AsciiLocader v-if="loading"></AsciiLocader>
+      <button v-else @click="addBag">Add Bag</button>
     </div>
 
     <!-- Filters -->
@@ -165,7 +168,8 @@ onMounted(() => {
       </tbody>
     </table>
 
-    <p v-else>No milk bags found.</p>
+    <p v-if="!loading && !filteredBags.length">No milk bags found.</p>
+    <AsciiLocader v-if="loading"></AsciiLocader>
   </div>
 </template>
 

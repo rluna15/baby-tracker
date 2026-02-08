@@ -1,6 +1,8 @@
 <script setup>
 import { onMounted, ref } from 'vue'
 
+import AsciiLocader from '../components/AsciiLocader.vue'
+
 import { useBabyLogs } from '../composables/useBabyLogs'
 const { logs, loading, error, fetchLogs, createLog} = useBabyLogs()
 
@@ -45,12 +47,13 @@ onMounted(() => {
       <option value="both">Both</option>
       <option value="none">None</option>
     </select>
-    <button @click="saveLog">Save</button>
+    <AsciiLocader v-if="loading"></AsciiLocader>
+    <button v-else @click="saveLog">Save</button>
   </div>
 
   <div class="container">
     <h2>Baby Logs</h2>
-
+    Entry Count: {{ logs.length }}
     <!-- Cards mobile -->
     <div class="log-cards mobile-only" v-if="logs.length">
       <div v-for="log in logs" :key="log.id" class="log-card">
